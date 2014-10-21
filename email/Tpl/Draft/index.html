@@ -1,0 +1,92 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+<script src="/assets/js/main.js"></script>
+<div id="content-main">
+<include file="Common:flag" />
+
+<table class="table table-hover">
+  <tbody>
+ 	<input type="hidden" value="" id="js_num" />
+ 	<tr>
+  		<th style="width:8%"></th>
+  		<th style="width:20">收件人</th>
+  		<th style="width:42%">标题</th>
+  		<th style="width:20%">时间</th>
+  		<th style="width:10%">操作</th>
+  	</tr>
+    <volist name='list' id="in">
+      <tr id="tr{$in.id}" style="font-weight: bold">
+      	<td><input type="checkbox" name="id[]" value="{$in.id}" id="{$in.id}" /></td>
+        <td>{$in.receiver_name}</td>
+        <td>{$in.title|mb_substr=0,20,'utf-8'}</td>
+        <td>{$in.sent_time|date='Y-m-d H:i',###}</td>
+        <td><a class="btn btn-default btn-xs" href="/Write/edit/id/{$in.id}">继续编辑</a></td>
+      </tr>
+    </volist>
+    <tr><td colspan="5">
+    <ul class="pagination">
+    {$page}
+    </ul>
+    </td></tr>
+  </tbody>
+</table>
+
+<script>
+//全选
+$("#js_all").click(function(){
+	var obj = $(this);
+	var check_obj = $("input[name='id[]']");
+	
+	if (obj.prop('checked')) {
+		check_obj.prop('checked', true);
+	} else {
+		check_obj.prop('checked', false);
+	}
+});
+$("#delete").click(function(){
+	var check_obj = $("input[name	='id[]']");
+	var flag = false;
+	for(i=0;i<check_obj.length;i++){
+		 if(check_obj[i].checked == true){
+			   flag = true;
+			   break;
+		  }
+	}
+	if(!flag){
+		 $.Alert('没有选中任何邮件，请重新选择');
+		 return false;
+	}else{
+		var num = ""
+		for(i=0;i<check_obj.length;i++){
+			if(check_obj[i].checked == true){
+				num+= check_obj[i].value+','
+			}
+		}
+		$("#js_num").val(num);
+
+		var js_num = $("#js_num").val()
+		$.ajax({
+			type:'POST',
+			url:"/Inbox/delete",
+			dataType : "json",
+			data:{"js_num":js_num},
+			success: function(data) {
+				var result = data.result;
+				if(result==1){
+					$.Alert('成功移动邮件到 回收站 ');
+					for(i=0;i<check_obj.length;i++){
+						if(check_obj[i].checked == true){
+							str = check_obj[i].value
+							 $("#tr"+str).remove();
+						}
+					}
+				}else{
+					$.Alert('删除 失败 ');
+				}
+			}
+		});
+	}
+})
+</script>
+</block>

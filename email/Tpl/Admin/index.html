@@ -1,0 +1,42 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+<div id="content-main">
+<div class="row">
+  <div class="col-xs-6" style="margin-bottom:15px">
+    <h1>员工列表</h1>
+    <a class="btn btn-primary btn-xs" href="/Admin/edit/">增加员工</a>
+  </div>
+</div>
+<empty name='list'>
+  <div class="clearfix empty-box">
+    没有找到符合条件的记录
+  </div>
+<else />
+<table class="table">
+  <tbody>
+  	<tr>
+  		<th>姓名</th>
+  		<th>邮箱</th>
+  		<th>操作</th>
+  	</tr>
+    <volist name='list' id="user">
+      <tr>
+        <td>{$user.name}</td>
+        <td>{$user.email}</td>
+        	<td><a class="btn btn-default btn-xs" href="/Admin/edit/uId/{$user.id}">编辑</a>
+        		<a class="btn btn-default btn-xs" href="/Admin/resetPassword/uId/{$user.id}">重置密码</a>
+        		<a class="btn btn-default btn-xs" href="/Admin/delete/uId/{$user.id}">删除</a>
+       	</td>
+      </tr>
+    </volist>
+    <tr><td colspan="3">
+    <ul class="pagination">
+    {$page}
+    </ul>
+    </td></tr>
+  </tbody>
+</table>
+</empty>
+
+</block>

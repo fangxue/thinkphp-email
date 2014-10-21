@@ -1,0 +1,24 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+
+  <div id="content-main" class="main clearfix">
+ 
+ 	
+	<ul class="list-group">
+	  <li class="list-group-item" style="font-size: 15px;line-height: normal;font-weight: bold;">{$info.title}</li>
+	  <li class="list-group-item">发件人：{$info.addresser_name}</li>
+	  <li class="list-group-item">收件人：{$info.receiver_name}</li>
+	  <li class="list-group-item">时间：{$info.sent_time|date='Y-m-d H:i',###}</li>
+	</ul>
+
+      </div>
+    <div>
+      {$info.content}
+    </div>
+  </div>
+<script>
+$(".col-sm-3").hide();
+$(".col-sm-9").css("width", "100%");
+</script>
+</block>

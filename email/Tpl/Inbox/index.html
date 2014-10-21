@@ -1,0 +1,35 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+<script src="/assets/js/main.js"></script>
+<div id="content-main">
+<include file="Common:flag" />
+
+<table class="table table-hover">
+  <tbody>
+ 	<input type="hidden" value="" id="js_num" />
+ 	<tr>
+  		<th style="width:8%"></th>
+  		<th style="width:20">发件人</th>
+  		<th style="width:42%">标题</th>
+  		<th style="width:20%">时间</th>
+  		<th style="width:10%">操作</th>
+  	</tr>
+    <volist name='list' id="in">
+      <tr id="tr{$in.id}" <if condition="$in.unread eq 1"> style="font-weight:bold"</if>>
+      	<td><input type="checkbox" name="id[]" value="{$in.id}" id="{$in.id}" /></td>
+        <td>{$in.addresser_name}</td>
+        <td>{$in.title|mb_substr=0,20,'utf-8'}</td>
+        <td>{$in.sent_time|date='Y-m-d H:i',###}</td>
+        <td><a class="btn btn-default btn-xs" target="_blank" href="/Public/show/id/{$in.id}">查看</a></td>
+      </tr>
+    </volist>
+    <tr><td colspan="5">
+    <ul class="pagination">
+    {$page}
+    </ul>
+    </td></tr>
+  </tbody>
+</table>
+
+</block>

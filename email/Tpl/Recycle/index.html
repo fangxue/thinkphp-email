@@ -1,0 +1,149 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+<div id="content-main">
+<div class="row" style="margin-top:15px;margin-bottom:15px;">
+ 	<div class="col-xs-1">
+      &nbsp;&nbsp;<input type="checkbox" id="js_all">
+    </div>
+    <div class="col-xs-1">
+      <span class="btn btn-primary btn-xs add_new" id="revocation">撤&nbsp;&nbsp;销</span>
+      
+    </div>
+    <div class="col-xs-1">
+      <span class="btn btn-primary btn-xs add_new" id="delete">彻底删除</span>
+      
+    </div>
+</div>
+
+<table class="table table-hover">
+  <tbody>
+ 	<input type="hidden" value="" id="js_num" />
+ 	<tr>
+  		<th style="width:8%"></th>
+  		<th style="width:20">发件人</th>
+  		<th style="width:42%">标题</th>
+  		<th style="width:20%">时间</th>
+  		<th style="width:10%">操作</th>
+  	</tr>
+  	</tr>
+    <volist name='list' id="in">
+      <tr id="tr{$in.id}" <if condition="$in.unread eq 1"> style="font-weight:bold"</if>>
+      	<td><input type="checkbox" name="id[]" value="{$in.id}" id="{$in.id}" /></td>
+        <td>{$in.name}</td>
+        <td>{$in.title|mb_substr=0,20,'utf-8'}</td>
+        <td>{$in.sent_time|date='Y-m-d H:i',###}</td>
+         <td><a class="btn btn-default btn-xs" target="_blank" href="/Public/show/id/{$in.id}">查看</a></td>
+      </tr>
+    </volist>
+    <tr><td colspan="5">
+    <ul class="pagination">
+    {$page}
+    </ul>
+    </td></tr>
+  </tbody>
+</table>
+
+<script>
+//全选
+$("#js_all").click(function(){
+	var obj = $(this);
+	var check_obj = $("input[name='id[]']");
+	
+	if (obj.prop('checked')) {
+		check_obj.prop('checked', true);
+	} else {
+		check_obj.prop('checked', false);
+	}
+});
+$("#revocation").click(function(){
+	var check_obj = $("input[name	='id[]']");
+	var flag = false;
+	for(i=0;i<check_obj.length;i++){
+		 if(check_obj[i].checked == true){
+			   flag = true;
+			   break;
+		  }
+	}
+	if(!flag){
+		 $.Alert('没有选中任何邮件，请重新选择');
+		 return false;
+	}else{
+		var num = ""
+		for(i=0;i<check_obj.length;i++){
+			if(check_obj[i].checked == true){
+				num+= check_obj[i].value+','
+			}
+		}
+		$("#js_num").val(num);
+
+		var js_num = $("#js_num").val()
+		$.ajax({
+			type:'POST',
+			url:"/Recycle/revocation",
+			dataType : "json",
+			data:{"js_num":js_num},
+			success: function(data) {
+				var result = data.result;
+				if(result==1){
+					$.Alert('撤销 成功 ');
+					for(i=0;i<check_obj.length;i++){
+						if(check_obj[i].checked == true){
+							str = check_obj[i].value
+							 $("#tr"+str).remove();
+						}
+					}
+				}else{
+					$.Alert('撤销失败 ');
+				}
+			}
+		});
+	}
+})
+
+$("#delete").click(function(){
+	var check_obj = $("input[name	='id[]']");
+	var flag = false;
+	for(i=0;i<check_obj.length;i++){
+		 if(check_obj[i].checked == true){
+			   flag = true;
+			   break;
+		  }
+	}
+	if(!flag){
+		 $.Alert('没有选中任何邮件，请重新选择');
+		 return false;
+	}else{
+		var num = ""
+		for(i=0;i<check_obj.length;i++){
+			if(check_obj[i].checked == true){
+				num+= check_obj[i].value+','
+			}
+		}
+		$("#js_num").val(num);
+
+		var js_num = $("#js_num").val()
+		$.ajax({
+			type:'POST',
+			url:"/Recycle/delete",
+			dataType : "json",
+			data:{"js_num":js_num},
+			success: function(data) {
+				var result = data.result;
+				if(result==1){
+					$.Alert('删除 成功 ');
+					for(i=0;i<check_obj.length;i++){
+						if(check_obj[i].checked == true){
+							str = check_obj[i].value
+							 $("#tr"+str).remove();
+						}
+					}
+				}else{
+					$.Alert('删除 失败 ');
+				}
+			}
+		});
+	}
+})
+</script>
+</block>

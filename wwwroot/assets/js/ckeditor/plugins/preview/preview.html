@@ -1,0 +1,10 @@
+<script>
+var style = '<style></style>';
+var doc = document;
+doc.open();
+doc.write(style + "<div style='width:960px;margin:0 auto;overflow:hidden;white-space:normal;word-break: break-all; '>"+ window.opener._cke_htmlToLoad +"</div>");
+doc.close();
+
+delete window.opener._cke_htmlToLoad;
+
+</script>

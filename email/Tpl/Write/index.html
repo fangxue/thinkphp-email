@@ -1,0 +1,82 @@
+<extend name="Common:base" />
+<block name="title">{$title}</block>
+<block name="main">
+
+
+   <script type="text/javascript" charset="utf-8" src="/assets/js/ueditor/ueditor.config.js"></script>
+  <script charset="utf-8"  src="/assets/js/ueditor/ueditor.all.min.js"></script>
+  <script charset="utf-8"  src="/assets/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+  
+<div id="content-main">
+	<form method="post" class="form-inline" id="doc_form" enctype="multipart/form-data" action='/write/save'>
+
+	
+       <div class="col-xs-6" style="margin-bottom:5px;width:100%;margin-top:10px;" id="list">
+        	<div>
+          		<span style="font-size:14px;padding-top:15px;" >发件人：</span>
+          		<input type="text" class="form-control input-sm" disabled id="addresser"  name="addresser" style="width:30%;" required="" value="{$user.name}<{$user.email}>"> 	
+        	</div>
+       </div>
+        <div class="col-xs-6" style="margin-bottom:5px;width:100%;margin-top:5px;" id="list">
+        	<div>
+          		<span style="font-size:14px;padding-top:15px;" >收件人：</span>
+          		<input type="text" class="form-control input-sm" id="receiver"  name="receiver" style="width:90%;" required="" <if condition="isset($info)">value="{$info.receiver_name}"</if>> 	
+        	</div>
+       </div>
+        <div class="col-xs-6" style="margin-bottom:10px;width:100%;margin-top:5px;" id="list">
+        	<div>
+          		<span style="font-size:14px;padding-top:15px;" >主&nbsp;&nbsp;&nbsp;&nbsp;题：</span>
+          		<input type="text" class="form-control input-sm" id="title"  name="title" style="width:90%;" required="" <if condition="isset($info)">value="{$info.title}"</if>> 	
+        	</div>
+       </div>
+      	<div class="col-xs-6" style="margin-bottom:15px;clear:both;width:100%;margin-top:10px;" id="list">
+        	<div>
+          	<textarea class="ckeditor" name="editor"  id="editor" style="min-height:350px;width:100%;" required=""> <if condition="isset($info)">{$info.content}</if></textarea>
+        	</div>
+		</div>
+		<div class="row" style="margin-left:10px">
+        	<div class="bt-group" >
+        		<input type="hidden" id="info_id" name="info_id" <if condition="isset($info)">value="{$info.id}"</if>>
+        		<input type="submit" class="btn btn-primary" value="发送">
+        		<a class="btn btn-primary " href="javascript:;" id="preview">预览</a>
+        		<a class="btn btn-primary " href="javascript:;" id="draft">存草稿</a>  
+        		<a href="/" class="btn btn-primary ">取消</a>
+        		<span class="red f12"></span> 
+      		</div>
+      	</div>
+	</form>
+</div>
+<script type="text/javascript">
+        var ue = UE.getEditor('editor');
+        $("#preview").click(function() {
+            
+            return $EDITORUI["edui272"]._onClick();
+        });
+        
+        $("#draft").click(function(){
+
+        		var info_id = $("#info_id").val()
+        		var receiver = $("#receiver").val()
+        		var title = $("#title").val()
+        		var editor = $("#editor").val()
+				var myDate = new Date();
+        		$.ajax({
+        			type:'POST',
+        			url:"/Write/saveDraft",
+        			dataType : "json",
+        			data:{"receiver":receiver,"title":title,"editor":editor,"info_id":info_id},
+        			success: function(data) {
+        				var result = data.result;
+        				if(result==1){
+        					$("#info_id").val(data.info_id);
+        					$.Alert('邮件已于 '+myDate.getHours()+':'+myDate.getMinutes()+' 成功保存到草稿箱');
+        				}else{
+        					$.Alert(data.msg);
+        				}
+        			}
+        		});
+        	
+        })
+    </script>
+</block>
